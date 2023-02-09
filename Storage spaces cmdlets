@@ -1,0 +1,19 @@
+# This was created for ITAS141 Lab 5. I would like to come up with a full script for creating new volumes in the future.
+
+$PoolDisks=Get-PhysicalDisk -CanPool $True
+$PoolDisks
+New-StoragePool -FriendlyName Pool1 -PhysicalDisks $PoolDisks -StorageSubSystemFriendlyName “Windows*”
+
+
+New-Volume -StoragePoolFriendlyName Pool1 -FriendlyName P-Drive -DriveLetter P -ProvisioningType Fixed -ResiliencySettingName Parity -Size 8GB
+Remove-VirtualDisk P-Drive 
+
+
+$DriveL=ls function:[f-z]: -n | ?{ !(test-path $_) } | Select -First 1 
+$Drivel=$Drivel.Substring(0,$Drivel.Length-1)
+New-Volume -StoragePoolFriendlyName Pool1 -FriendlyName M-Drive -DriveLetter $DriveL -ProvisioningType Fixed -ResiliencySettingName Mirror -Size 8GB -Filesystem NTFS
+
+
+$DriveL=ls function:[f-z]: -n | ?{ !(test-path $_) } | Select -First 1 
+$Drivel=$Drivel.Substring(0,$Drivel.Length-1)
+New-Volume -StoragePoolFriendlyName Pool1 -FriendlyName S-Drive -DriveLetter $DriveL -ProvisioningType Thin -ResiliencySettingName Simple -Size 8GB -Filesystem NTFS
